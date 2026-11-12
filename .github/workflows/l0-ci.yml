@@ -1,0 +1,62 @@
+name: L0-trusted-ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  l0-trusted-ci:
+    name: L0-trusted-ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run Trusted C-18 Audit
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin main:refs/remotes/origin/main
+          git show origin/main:scripts/c18-audit.mjs > "$RUNNER_TEMP/trusted-c18-audit.mjs"
+          chmod +x "$RUNNER_TEMP/trusted-c18-audit.mjs"
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import { spawnSync } from "node:child_process";
+            const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
+            const pr = event.pull_request || {};
+            const labels = (pr.labels || []).map(l => l.name);
+            const body = pr.body || "";
+            const title = pr.title || "";
+            const prText = [title, body].filter(Boolean).join("\n");
+            const args = [
+              process.env.RUNNER_TEMP + "/trusted-c18-audit.mjs",
+              "--repo-dir", ".",
+              "--base-ref", "origin/main",
+              "--head-ref", "HEAD",
+              "--pr-text", prText
+            ];
+            if (labels.includes("allow-test-modify")) {
+              args.push("--allow-test-modify");
+            }
+            const match = body.match(/Allowed-Paths:\s*([^\r\n]+)/i);
+            if (match && match[1]) {
+              args.push("--allowed-paths", match[1].trim());
+            }
+            console.log("Running trusted C-18 audit with args:", args);
+            const res = spawnSync("node", args, { stdio: "inherit" });
+            process.exit(res.status ?? 1);
+          '
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm test

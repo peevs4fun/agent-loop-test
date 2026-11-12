@@ -1,0 +1,10 @@
+{
+  "name": "agent-loop-test",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "lint": "node --check src/math.mjs && node --check src/unrelated.mjs"
+  }
+}
