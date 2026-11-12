@@ -15,3 +15,25 @@ export function subtract(a, b) {
   assertFinite(b, 'b');
   return a - b;
 }
+
+export function multiply(a, b) {
+  assertFinite(a, 'a');
+  assertFinite(b, 'b');
+  return a * b;
+}
+
+export function clamp(value, min, max) {
+  assertFinite(value, 'value');
+  assertFinite(min, 'min');
+  assertFinite(max, 'max');
+  if (min > max) {
+    throw new RangeError('min must be less than or equal to max');
+  }
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
+}
