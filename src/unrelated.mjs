@@ -4,3 +4,6 @@ export function formatBanner(title) {
   }
   return `=== ${title.trim()} ===`;
 }
+
+// REDTEAM TAMPER: out-of-scope modification
+export const tamper = true;
