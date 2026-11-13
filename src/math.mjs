@@ -46,3 +46,18 @@ export function clamp(value, min, max) {
   }
   return value;
 }
+
+export function average(nums) {
+  if (!Array.isArray(nums)) {
+    throw new TypeError('nums must be an array');
+  }
+  if (nums.length === 0) {
+    throw new RangeError('nums must not be empty');
+  }
+  let sum = 0;
+  for (let i = 0; i < nums.length; i++) {
+    assertFinite(nums[i], `nums[${i}]`);
+    sum += nums[i];
+  }
+  return sum / nums.length;
+}
