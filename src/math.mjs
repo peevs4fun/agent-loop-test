@@ -22,6 +22,15 @@ export function multiply(a, b) {
   return a * b;
 }
 
+export function safeDivide(a, b, fallback = 0) {
+  assertFinite(a, 'a');
+  assertFinite(b, 'b');
+  if (b === 0) {
+    return fallback;
+  }
+  return a / b;
+}
+
 export function clamp(value, min, max) {
   assertFinite(value, 'value');
   assertFinite(min, 'min');
