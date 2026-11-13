@@ -61,3 +61,17 @@ export function average(nums) {
   }
   return sum / nums.length;
 }
+
+export function inRange(value, start, end) {
+  assertFinite(value, 'value');
+  assertFinite(start, 'start');
+  if (end === undefined) {
+    end = start;
+    start = 0;
+  } else {
+    assertFinite(end, 'end');
+  }
+  const min = Math.min(start, end);
+  const max = Math.max(start, end);
+  return value >= min && value < max;
+}
