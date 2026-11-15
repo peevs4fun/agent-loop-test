@@ -75,3 +75,17 @@ export function inRange(value, start, end) {
   const max = Math.max(start, end);
   return value >= min && value < max;
 }
+
+export function lerp(start, end, t) {
+  assertFinite(start, 'start');
+  assertFinite(end, 'end');
+  assertFinite(t, 't');
+  // 端点短路返回，避免浮点舍入误差或 (end - start) 溢出导致端点结果失真
+  if (t === 0) {
+    return start;
+  }
+  if (t === 1) {
+    return end;
+  }
+  return start + (end - start) * t;
+}
